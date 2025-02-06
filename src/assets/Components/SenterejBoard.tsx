@@ -1,10 +1,11 @@
 import React from "react";
-import SenterejGameWithHighlights from "./senterejWithHighlight";
+import validatingMoves from "./validatingMoves";
+import CustomizedMovement from "./validatingMoves";
 
 const SenterejGame: React.FC = () => {
     return (
         <div>
-        <SenterejGameWithHighlights />
+        <CustomizedMovement />
         </div>
     );
     };
