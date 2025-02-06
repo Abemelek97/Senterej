@@ -1,10 +1,10 @@
 import React from "react";
-import Senterej from "./assets/Components/SenterejBoard";
+import SenterejGame from "./assets/Components/SenterejBoard";
 
 const App: React.FC = () => {
   return (
     <div>
-      <Senterej />
+      <SenterejGame/>
     </div>
   );
 };
