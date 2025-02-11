@@ -1,87 +1,32 @@
-import React, { useState } from "react";
-import Chessboard from "chessboardjsx";
-import { Chess, Square, Move} from "chess.js";
+import {Square, Move} from "chess.js";
 
-const CustomizedMovement: React.FC = () => {
-    const[game, setGame] = useState(new Chess());
-    const[selectedSquare, setSelectedSquare] = useState<string | null>(null);
-    const[highlightedSquares, setHighlightedSquares] = useState<Record<string, React.CSSProperties>>({});
+const CustomizedMedeqMovement = (game: any, square: Square):String[] => {
+    const moves = game.moves({square, verbose: true}) as Move[];
 
-    //Function to get valid moves with custom pawn rules
-    const getValidMoves = (square: Square) => {
-        const moves = game.moves({ square, verbose: true })
-        //  custom pawn rules
-        const piece = game.get(square);
-        if(piece?.type === "p") {
-            return moves.filter((move: Move) => {
-                if(Math.abs(move.from.charCodeAt(1) - move.to.charCodeAt(1)) === 2) {
-                    return false;
-                }
-                if(move.flags.includes("e")) {
-                    return false;
-                }
-                return true;
-            });
-            
-        }
-            if(piece?.type === "b") {
-                return moves.filter((move: Move) => {
-                    if(Math.abs(move.from.charCodeAt(1) - move.to.charCodeAt(1)) === 3) {
-                        return false;
-                    }                 
-                    return true;
-                });
+    const piece = game.get(square);
+    if(!piece) return[];
+
+        //Custom Medeq Movement Logic
+    if(piece.type === "p"){
+        return moves
+        .filter((move: Move) => {
+            if(Math.abs(move.from.charCodeAt(1) - move.to.charCodeAt(1)) === 2)
+                return false;
+            if(move.flags.includes("e"))
+                return false;
+            return true;})
+               .map((move: Move) => move.to);
             }
-        return moves;
-    }
-    const handleSquareClick = (square: Square) => {
-        if(selectedSquare && highlightedSquares[square]) {
-           const newGame = new Chess(game.fen());
-           newGame.move({ from: selectedSquare, to: square });
-           setGame(newGame);
-           setSelectedSquare(null);
-           setHighlightedSquares({});
-        } else {
-            const validMoves = getValidMoves(square);
-            const newHighlightedSquares: Record<string, React.CSSProperties> = {};
-            validMoves.forEach((move) => {
-                newHighlightedSquares[move.to] = { backgroundColor: "rgba(0, 255, 0, 0.5)" };
-            });
-            setSelectedSquare(square);
-            setHighlightedSquares(newHighlightedSquares);
-        }
+            //Custom Saba Movement Logic
+            if(piece.type === "b"){
+                return moves
+                .filter((move: Move) => {
+                    const fileDiff = Math.abs(move.from.charCodeAt(0) - move.to.charCodeAt(0));
+                    const rankDiff = Math.abs(move.from.charCodeAt(1) - move.to.charCodeAt(1));
+                    return fileDiff === rankDiff && fileDiff <= 2;
+                })
+                .map((move: Move) => move.to);
+            }
+            return moves.map((move: Move) => move.to);
     };
-    const handleBoardClick = () =>{
-        setSelectedSquare(null);
-        setHighlightedSquares({});
-    };
-    return(
-        <div>
-            <Chessboard            
-                position={game.fen()}
-                onSquareClick={handleSquareClick}
-                squareStyles={highlightedSquares}
-                width={750}
-                        orientation='white'
-                        boardStyle={{
-                            borderRadius: "12px",
-                            border: "3px solid #0000ff",
-                            boxShadow: `0 6px 15px rgba(0,0,0,0.4)`
-                        }}
-                        lightSquareStyle={{
-                            backgroundColor: "#ff0000",
-                            boxShadow: "inset 0 0 8px #0000ff"
-                        }}
-                        darkSquareStyle={{
-                            backgroundColor: "#ff0000",
-                            boxShadow: "inset 0 0 8px #0000ff"
-                        }}
-                        onDrop = {({sourceSquare, targetSquare}) =>
-                            ({from: sourceSquare, to: targetSquare})
-                        }
-            
-            />
-        </div>
-    )
-};
-export default CustomizedMovement;
+    export default CustomizedMedeqMovement;;
