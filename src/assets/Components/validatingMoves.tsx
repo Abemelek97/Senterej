@@ -37,6 +37,15 @@ const CustomizedMedeqMovement = (game: any, square: Square) => {
                 })
                 .map((move) => move.to as string);
             }
+            //Custom Negus Movement Logic
+           if(piece.type === "k"){
+            return moves.filter((move) => {
+                if(move.flags.includes("k") || move.flags.includes("q"))
+                    return false;
+                return true;
+            })
+                .map((move) => move.to as string);
+           }
             return moves.map((move: Move) => move.to as string || []);
         };
-    export default CustomizedMedeqMovement;;
+    export default CustomizedMedeqMovement;
