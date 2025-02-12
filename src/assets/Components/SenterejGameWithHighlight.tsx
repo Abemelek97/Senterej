@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import  {Square, Chess,} from 'chess.js';
 import Chessboard from 'chessboardjsx';
 import CustomizedMedeqMovement from './validatingMoves';
+import {motion} from 'framer-motion';
 
     const SenterejGameWithHighlight = () => {
          const[game, setGame] = useState(new Chess());
          const[selectedSquare, setSelectedSquare] = useState<string | null>(null);
+         const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
          const[highlightedSquares, setHighlightedSquares] = useState<Record<string, React.CSSProperties>>({});
 
             const makeMove = (move: {from: string; to: string}) => {
@@ -36,6 +38,17 @@ import CustomizedMedeqMovement from './validatingMoves';
                     }
             
                     };
+                    useEffect(() => {
+                        if(game.isCheckmate()){
+                          setGameOverMessage(`ውጣ በቃ! ${game.turn() === "w" ? "Black" : "ነጭ"} አሸንፏል!`);
+                         
+                        }
+                        else if(game.isDraw()){
+                          setGameOverMessage("መና ነው");
+                        }else{
+                          setGameOverMessage(null);
+                        }
+                      }, [game]);
 
     return(
         <div>
@@ -61,8 +74,31 @@ import CustomizedMedeqMovement from './validatingMoves';
                         onDrop = {({sourceSquare, targetSquare}) =>
                             ({from: sourceSquare, to: targetSquare})
                         }
-            
+                        
             />
+             {gameOverMessage && (
+                            <motion.div
+                              className="absolute inset-0 flex items-center justify-center  bg-opacity-50"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.3 }}
+                            >
+                              <motion.div
+                                className="bg-black p-6 rounded-lg shadow-lg"
+                                initial={{ scale: 0.8 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: "spring", stiffness: 150 }}
+                              >
+                                <h2 className="text-2xl font-bold text-center">{gameOverMessage}</h2>
+                                <button
+                                  onClick={() => window.location.reload()} // Restart game
+                                  className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition"
+                                >
+                                 እንደገና አስጀምር
+                                </button>
+                              </motion.div>
+                            </motion.div>
+                          )}
         </div>
     )
     };
