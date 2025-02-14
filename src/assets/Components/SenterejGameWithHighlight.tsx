@@ -5,12 +5,13 @@ import CustomizedMedeqMovement from './validatingMoves';
 import {motion} from 'framer-motion';
 
     const SenterejGameWithHighlight = () => {
-         const[game, setGame] = useState(new Chess());
+         const[game, setGame] = useState<Chess>(new Chess());
+       
          const[selectedSquare, setSelectedSquare] = useState<string | null>(null);
          const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
          const[highlightedSquares, setHighlightedSquares] = useState<Record<string, React.CSSProperties>>({});
-
-            const makeMove = (move: {from: string; to: string}) => {
+      
+                const makeMove = (move: {from: string; to: string}) => {
                     const gameCopy = new Chess(game.fen());
                     const result = gameCopy.move(move);
                     if(result){
@@ -49,10 +50,10 @@ import {motion} from 'framer-motion';
                           setGameOverMessage(null);
                         }
                       }, [game]);
-
+               
     return(
-        <div>
-            <Chessboard            
+        <div className="chess-game" >           
+            <Chessboard      
                 position={game.fen()}
                 onSquareClick={handleSquareClick}
                 squareStyles={highlightedSquares}
@@ -73,8 +74,7 @@ import {motion} from 'framer-motion';
                         }}
                         onDrop = {({sourceSquare, targetSquare}) =>
                             ({from: sourceSquare, to: targetSquare})
-                        }
-                        
+                        }                      
             />
              {gameOverMessage && (
                             <motion.div
@@ -98,7 +98,7 @@ import {motion} from 'framer-motion';
                                 </button>
                               </motion.div>
                             </motion.div>
-                          )}
+                          )}            
         </div>
     )
     };
