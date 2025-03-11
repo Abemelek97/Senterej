@@ -64,17 +64,15 @@ const SenterejGameWithHighlight = () => {
   }, [game]);
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", gap: "20px" }}>
-      {/* ✅ Captured Black Pieces Section */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <h3>Black Captured</h3>
-        <div style={{ display: "flex", gap: "5px" }}>
-          {capturedBlack.map((piece, index) => (
-            <span key={index} style={{ fontSize: "24px" }}>
-              {getPieceUnicode(piece, "b")}
-            </span>
-          ))}
-        </div>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "10px" }}>
+      <h3>Black Captured</h3>
+      {/* ✅ Captured Black Pieces (Top) */}
+      <div style={{ display: "flex", justifyContent: "center", gap: "5px", minHeight: "40px" }}>
+        {capturedBlack.map((piece, index) => (
+          <span key={index} style={{ fontSize: "24px" }}>
+            {getPieceUnicode(piece, "b")}
+          </span>
+        ))}
       </div>
 
       {/* Chessboard Component */}
@@ -101,7 +99,7 @@ const SenterejGameWithHighlight = () => {
       />
 
       {/* ✅ Captured White Pieces Section */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
         <h3>White Captured</h3>
         <div style={{ display: "flex", gap: "5px" }}>
           {capturedWhite.map((piece, index) => (
