@@ -12,3 +12,25 @@ h1{
   text-align: center;
   font-family: Arial, sans-serif;
 }
+.captured-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.captured {
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
+.white {
+  background: lightgray;
+  padding: 10px;
+}
+
+.black {
+  background: darkgray;
+  color: white;
+  padding: 10px;
+}
