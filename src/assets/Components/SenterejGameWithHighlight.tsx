@@ -3,6 +3,7 @@ import { Square, Chess } from 'chess.js';
 import Chessboard from 'chessboardjsx';
 import CustomizedMedeqMovement from './validatingMoves';
 import { motion } from 'framer-motion';
+import PawnPromotion from './MedeqPromotion';
 
 const SenterejGameWithHighlight = () => {
   const [game, setGame] = useState(new Chess());
@@ -11,24 +12,29 @@ const SenterejGameWithHighlight = () => {
   const [highlightedSquares, setHighlightedSquares] = useState<Record<string, React.CSSProperties>>({});
   const [capturedWhite, setCapturedWhite] = useState<string[]>([]);
   const [capturedBlack, setCapturedBlack] = useState<string[]>([]);
+  const [promotionMove, setPromotionMove] = useState<{ from: Square; to: Square } | null>(null);
 
   const makeMove = (move: { from: string; to: string }) => {
-    const gameCopy = new Chess(game.fen());
-    const result = gameCopy.move(move);
+    const piece = game.get(move.from as Square);
+    const isPromotion = piece?.type === "p" && (move.to[1] === "8" || move.to[1] === "1")
 
-    if (result) {
-      // ✅ Track Captured Pieces
-      if (result.captured) {
-        if (result.color === "w") {
-          setCapturedBlack([...capturedBlack, result.captured]);
-        } else {
-          setCapturedWhite([...capturedWhite, result.captured]);
-        }
-      }
-
-      setGame(gameCopy);
+    if(isPromotion){
+      setPromotionMove({ from: move.from as Square, to: move.to as Square });
+      return;
     }
-  };
+    const gameCopy = new Chess(game.fen());
+    const result = gameCopy.move({
+      from: move.from as Square,
+      to: move.to as Square,
+    });
+    if(result){
+      if(result.captured){
+        if(result.color === "w") setCapturedBlack((prev) => [...prev, result.captured!]);
+        else setCapturedWhite((prev) => [...prev, result.captured!]);
+    }
+    setGame(new Chess(gameCopy.fen()));
+  }
+}
 
   const handleSquareClick = (square: string) => {
     if (selectedSquare) {
@@ -65,7 +71,7 @@ const SenterejGameWithHighlight = () => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "10px" }}>
-      <h3>Black Captured</h3>
+      <h3>ጥቁር የበላው</h3>
       {/* ✅ Captured Black Pieces (Top) */}
       <div style={{ display: "flex", justifyContent: "center", gap: "5px", minHeight: "40px" }}>
         {capturedBlack.map((piece, index) => (
@@ -100,7 +106,7 @@ const SenterejGameWithHighlight = () => {
 
       {/* ✅ Captured White Pieces Section */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
-        <h3>White Captured</h3>
+        <h3>ነጭ የበላው</h3>
         <div style={{ display: "flex", gap: "5px" }}>
           {capturedWhite.map((piece, index) => (
             <span key={index} style={{ fontSize: "24px" }}>
@@ -108,6 +114,13 @@ const SenterejGameWithHighlight = () => {
             </span>
           ))}
         </div>
+        {/* Medeq Promotion UI*/}
+        <PawnPromotion
+          promotionMove={promotionMove}
+          game={game}
+          setGame={setGame}
+          setPromotionMove={setPromotionMove}
+        />
       </div>
 
       {/* ✅ Game Over Message */}
