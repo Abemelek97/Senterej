@@ -15,6 +15,7 @@ const SenterejGameWithHighlight = () => {
   const [capturedBlack, setCapturedBlack] = useState<string[]>([]);
   const [promotionMove, setPromotionMove] = useState<{ from: Square; to: Square } | null>(null);
   const [currentTurn, setCurrentTurn] = useState<"w" | "b">("w");
+  const [gameStarted, setGameStarted] = useState(false);
 
   const makeMove = (move: { from: string; to: string }) => {
     const piece = game.get(move.from as Square);
@@ -30,14 +31,13 @@ const SenterejGameWithHighlight = () => {
       to: move.to as Square,
     });
     if(result){
-      if(result.captured){
-        if(result.color === "w") setCapturedBlack((prev) => [...prev, result.captured!]);
-        else setCapturedWhite((prev) => [...prev, result.captured!]);
+      if(!gameStarted){
+        setGameStarted(true);
+      }
+      setCurrentTurn(gameCopy.turn());
+      setGame(new Chess(gameCopy.fen()))
     }
-    setCurrentTurn(gameCopy.turn())
-    setGame(new Chess(gameCopy.fen()));
-  }
-};
+  };        
 
   const handleSquareClick = (square: string) => {
     if (selectedSquare) {
@@ -71,11 +71,14 @@ const SenterejGameWithHighlight = () => {
       setGameOverMessage(null);
     }
   }, [game]);
+  const onTimeout = (color: "w" | "b") => {
+    setGameOverMessage(`${color === "w"? "ነጭ" : "ጥቁር"} ሰዓት አልቁዋል!`)
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "10px" }}>
     {/*Timer  */}
-    <ChessTimer currentTurn={currentTurn} gameOver={!!gameOverMessage} />
+    <ChessTimer currentTurn={currentTurn} gameOver={!!gameOverMessage} onTimeout={onTimeout} gameStarted = {gameStarted} />
       <h3>ጥቁር የበላው</h3>
       {/* ✅ Captured Black Pieces (Top) */}
       <div style={{ display: "flex", justifyContent: "center", gap: "5px", minHeight: "40px" }}>
