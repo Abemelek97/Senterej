@@ -5,17 +5,13 @@ interface Props {
   gameOver: boolean;
   onTimeout: (color: "w" | "b") => void;
   gameStarted: boolean;
+  timeLimit: number;
 }
 
-const ChessTimer: React.FC<Props> = ({ currentTurn, gameOver, onTimeout, gameStarted }) => {
-  const [whiteTime, setWhiteTime] = useState(300); // 5 mins
-  const [blackTime, setBlackTime] = useState(300); // 5 mins
+const ChessTimer: React.FC<Props> = ({ currentTurn, gameOver, onTimeout, gameStarted, timeLimit }) => {
+  const [whiteTime, setWhiteTime] = useState(timeLimit); // 5 mins
+  const [blackTime, setBlackTime] = useState(timeLimit); // 5 mins
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-
-
- 
-
 
   // Countdown timer based on turn
   useEffect(() => {

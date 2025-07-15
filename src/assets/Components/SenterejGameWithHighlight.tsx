@@ -6,7 +6,12 @@ import { motion } from 'framer-motion';
 import PawnPromotion from './MedeqPromotion';
 import ChessTimer from './SenterejTimer';
 
-const SenterejGameWithHighlight = () => {
+interface SenterejGameWithHighlightProps
+{
+  timeLimit: number;
+}
+
+const SenterejGameWithHighlight: React.FC<SenterejGameWithHighlightProps> = ({timeLimit}) => {
   const [game, setGame] = useState(new Chess());
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
@@ -78,7 +83,7 @@ const SenterejGameWithHighlight = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "10px" }}>
     {/*Timer  */}
-    <ChessTimer currentTurn={currentTurn} gameOver={!!gameOverMessage} onTimeout={onTimeout} gameStarted = {gameStarted} />
+    <ChessTimer currentTurn={currentTurn} gameOver={!!gameOverMessage} onTimeout={onTimeout} gameStarted = {gameStarted} timeLimit={timeLimit}/>
       <h3>ጥቁር የበላው</h3>
       {/* ✅ Captured Black Pieces (Top) */}
       <div style={{ display: "flex", justifyContent: "center", gap: "5px", minHeight: "40px" }}>
