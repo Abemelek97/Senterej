@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import GameMenu from "./assets/Components/GameMenu";
 import SenterejGameWithHighlight from "./assets/Components/SenterejGameWithHighlight";
-import musicFile from "./assets/music.mp3";
+import musicFile from "./music.mp3";
 
 
 const App = () => {

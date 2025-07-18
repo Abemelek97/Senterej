@@ -35,14 +35,18 @@ const SenterejGameWithHighlight: React.FC<SenterejGameWithHighlightProps> = ({ti
       from: move.from as Square,
       to: move.to as Square,
     });
-    if(result){
-      if(!gameStarted){
-        setGameStarted(true);
+   if (result) {
+      if (result.captured) {
+        if (result.color === "w") {
+          setCapturedBlack((prev) => [...prev, result.captured!]);
+        } else {
+          setCapturedWhite((prev) => [...prev, result.captured!]);
+        }
       }
       setCurrentTurn(gameCopy.turn());
-      setGame(new Chess(gameCopy.fen()))
+      setGame(new Chess(gameCopy.fen()));
     }
-  };        
+  };
 
   const handleSquareClick = (square: string) => {
     if (selectedSquare) {
@@ -84,7 +88,7 @@ const SenterejGameWithHighlight: React.FC<SenterejGameWithHighlightProps> = ({ti
     <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "10px" }}>
     {/*Timer  */}
     <ChessTimer currentTurn={currentTurn} gameOver={!!gameOverMessage} onTimeout={onTimeout} gameStarted = {gameStarted} timeLimit={timeLimit}/>
-      <h3>ጥቁር የበላው</h3>
+      <h3>ነጭ የበላው</h3>
       {/* ✅ Captured Black Pieces (Top) */}
       <div style={{ display: "flex", justifyContent: "center", gap: "5px", minHeight: "40px" }}>
         {capturedBlack.map((piece, index) => (
@@ -119,7 +123,7 @@ const SenterejGameWithHighlight: React.FC<SenterejGameWithHighlightProps> = ({ti
 
       {/* ✅ Captured White Pieces Section */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
-        <h3>ነጭ የበላው</h3>
+        <h3>ጥቁርየበላው</h3>
         <div style={{ display: "flex", gap: "5px" }}>
           {capturedWhite.map((piece, index) => (
             <span key={index} style={{ fontSize: "24px" }}>
