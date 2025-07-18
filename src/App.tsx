@@ -4,6 +4,7 @@ import SenterejGameWithHighlight from "./assets/Components/SenterejGameWithHighl
 import musicFile from "./music.mp3";
 
 
+
 const App = () => {
   const [started, setStarted] = useState(false);
   const [timeControl, setTimeControl] = useState(300); // in seconds
