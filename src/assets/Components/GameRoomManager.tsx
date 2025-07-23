@@ -1,58 +1,51 @@
-// src/components/MultiplayerGame.tsx
-import React, { useEffect, useState } from "react";
-import { Chess } from "chess.js";
-import Chessboard from "chessboardjsx";
-import { db } from "../firebase";
-import { ref, onValue, set } from "firebase/database";
+// GameRoomManager.tsx
+import React, { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-interface Props {
-  roomId: string;
-  isHost: boolean;
+interface GameRoomManagerProps {
+  onStartGame: (roomId: string, isHost: boolean) => void;
 }
 
-const MultiplayerGame: React.FC<Props> = ({ roomId, isHost }) => {
-  const [game, setGame] = useState(new Chess());
-  const [fen, setFen] = useState("start");
-  const [playerColor, setPlayerColor] = useState<"w" | "b">(isHost ? "w" : "b");
+const GameRoomManager: React.FC<GameRoomManagerProps> = ({ onStartGame }) => {
+  const [roomInput, setRoomInput] = useState("");
 
-  useEffect(() => {
-    const gameRef = ref(db, `games/${roomId}`);
-    onValue(gameRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data?.fen) {
-        setFen(data.fen);
-        const updatedGame = new Chess();
-        updatedGame.load(data.fen);
-        setGame(updatedGame);
-      }
-    });
-  }, [roomId]);
+  const handleCreateRoom = () => {
+    const newRoomId = uuidv4();
+    onStartGame(newRoomId, true);
+  };
 
-  const handleMove = ({ sourceSquare, targetSquare }: any) => {
-    if (game.turn() !== playerColor) return;
-
-    const newGame = new Chess(game.fen());
-    const move = newGame.move({ from: sourceSquare, to: targetSquare });
-    if (move) {
-      set(ref(db, `games/${roomId}`), {
-        fen: newGame.fen(),
-        turn: newGame.turn(),
-      });
+  const handleJoinRoom = () => {
+    if (roomInput.trim() !== "") {
+      onStartGame(roomInput.trim(), false);
+    } else {
+      alert("Please enter a valid room ID.");
     }
   };
 
   return (
-    <div>
-      <h2>Room ID: {roomId}</h2>
-      <h3>You are playing as: {playerColor === "w" ? "White" : "Black"}</h3>
-      <Chessboard
-        position={fen}
-        orientation={playerColor === "w" ? "white" : "black"}
-        onDrop={handleMove}
-        width={600}
-      />
+    <div style={{ textAlign: "center", marginTop: "40px" }}>
+      <h2>♟️ Multiplayer Game Setup</h2>
+
+      <div style={{ marginBottom: "20px" }}>
+        <button onClick={handleCreateRoom} style={{ padding: "10px 20px", marginRight: "10px" }}>
+          Create New Room
+        </button>
+      </div>
+
+      <div>
+        <input
+          type="text"
+          placeholder="Enter Room ID"
+          value={roomInput}
+          onChange={(e) => setRoomInput(e.target.value)}
+          style={{ padding: "8px", width: "200px" }}
+        />
+        <button onClick={handleJoinRoom} style={{ padding: "8px 16px", marginLeft: "10px" }}>
+          Join Room
+        </button>
+      </div>
     </div>
   );
 };
 
-export default MultiplayerGame;
+export default GameRoomManager;

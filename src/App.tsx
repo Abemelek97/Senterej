@@ -5,11 +5,13 @@ import musicFile from "./music.mp3";
 
 
 
+
 const App = () => {
   const [started, setStarted] = useState(false);
   const [timeControl, setTimeControl] = useState(300); // in seconds
   const [musicOn, setMusicOn] = useState(true);
-
+  const [mode, setMode] = useState<"multiplayer" | "ai" | "local" | null>(null);
+  const [roomId, setRoomId] = useState<string | null>(null);
   // Play music if enabled
   React.useEffect(() => {
     if (started && musicOn) {
