@@ -1,60 +1,57 @@
 // MultiplayerGame.tsx
-/*
+
 import React, { useEffect, useState } from "react";
 import { Chess } from "chess.js";
 import { ref, onValue, set } from "firebase/database";
-//import { database } from "firebase.ts"; // ✅ Make sure you have this
+import { db } from "../../firebase"; // Adjust the import based on your project structure
 import SenterejGameWithHighlight from "./SenterejGameWithHighlight";
 
-interface MultiplayerGameProps {
+interface Props {
   roomId: string;
   isHost: boolean;
   timeLimit: number;
 }
 
-const MultiplayerGame: React.FC<MultiplayerGameProps> = ({ roomId, isHost, timeLimit }) => {
-  const [game, setGame] = useState(new Chess());
-  const [playerColor, setPlayerColor] = useState<"w" | "b">(isHost ? "w" : "b");
+const MultiplayerGame: React.FC<Props> = ({ roomId, isHost, timeLimit }) => {
+   const [fen, setFen] = useState<string>("start");
+   const playerColor: "w" | "b" = isHost ? "w" : "b";
 
   // Listen for moves
   useEffect(() => {
-    const gameRef = ref(database, `games/${roomId}`);
-
-    const unsubscribe = onValue(gameRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data?.fen && data.fen !== game.fen()) {
-        const updatedGame = new Chess(data.fen);
-        setGame(updatedGame);
-      }
+    const gameRef = ref(db, `games/${roomId}`);
+    const unsub = onValue(gameRef, (snap) => {
+      const data = snap.val();
+      if (data?.fen) setFen(data.fen);
     });
-
-    return () => unsubscribe();
+    return () => unsub();
   }, [roomId]);
+    
+const onExternalMove = async (from: string, to: string) => {
+    const g = new Chess(fen === "start" ? undefined : fen);
+    const piece = g.get(from as any);
+    const needPromo = piece?.type === "p" && (to[1] === "1" || to[1] === "8");
+    const mv = g.move(needPromo ? { from, to, promotion: "q" } : { from, to });
+    if (!mv) return;
 
-  const handleMove = (from: string, to: string) => {
-    const newGame = new Chess(game.fen());
-    const move = newGame.move({ from, to });
-
-    if (move) {
-      setGame(newGame);
-      const gameRef = ref(database, `games/${roomId}`);
-      set(gameRef, { fen: newGame.fen() });
-    }
+    await set(ref(db, `games/${roomId}`), {
+      fen: g.fen(),
+      turn: g.turn(),
+      lastMove: { from, to, by: playerColor, at: Date.now() },
+    });
   };
 
   return (
-    <div>
-      <h2>Multiplayer Mode – You are playing as {playerColor === "w" ? "White" : "Black"}</h2>
+    <div style = {{padding: 12}}>
+    <h3>Room: {roomId} — You are {playerColor === "w" ? "White" : "Black"}</h3>
 
       <SenterejGameWithHighlight
-        //externalGame={game}
-        //onExternalMove={handleMove}
-        //playerColor={playerColor}
-        //timeLimit={timeLimit}
+        externalFen={fen}
+        onExternalMove={onExternalMove}
+        playerColor={playerColor}
+        timeLimit={timeLimit}
       />
     </div>
   );
 };
 
 export default MultiplayerGame;
-*/

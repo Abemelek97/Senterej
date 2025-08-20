@@ -6,12 +6,20 @@ import { motion } from 'framer-motion';
 import PawnPromotion from './MedeqPromotion';
 import ChessTimer from './SenterejTimer';
 
-interface SenterejGameWithHighlightProps
+interface Props
 {
+  externalFen?: string;
+  onExternalMove?: (from: string, to: string) => void;
   timeLimit: number;
+  playerColor?: "w" | "b";
 }
 
-const SenterejGameWithHighlight: React.FC<SenterejGameWithHighlightProps> = ({timeLimit}) => {
+const SenterejGameWithHighlight: React.FC<Props> = ({
+  externalFen,
+  onExternalMove,
+  playerColor = "w",
+  timeLimit,
+}) => {
   const [game, setGame] = useState(new Chess());
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [gameOverMessage, setGameOverMessage] = useState<string | null>(null);
@@ -22,125 +30,167 @@ const SenterejGameWithHighlight: React.FC<SenterejGameWithHighlightProps> = ({ti
   const [currentTurn, setCurrentTurn] = useState<"w" | "b">("w");
   const [gameStarted, setGameStarted] = useState(false);
 
-  const makeMove = (move: { from: string; to: string }) => {
-    const piece = game.get(move.from as Square);
-    const isPromotion = piece?.type === "p" && (move.to[1] === "8" || move.to[1] === "1")
-
-    if(isPromotion){
-      setPromotionMove({ from: move.from as Square, to: move.to as Square });
+    // Load external FEN (Multiplayer / AI)
+  useEffect(() => {
+    if (externalFen === undefined) return;
+    if (externalFen === "start") {
+      const g = new Chess();
+      setGame(g);
+      setCurrentTurn(g.turn());
+      setSelectedSquare(null);
+      setHighlightedSquares({});
       return;
     }
-    const gameCopy = new Chess(game.fen());
-    const result = gameCopy.move({
-      from: move.from as Square,
-      to: move.to as Square,
-    });
-   if (result) {
-      if (result.captured) {
-        if (result.color === "w") {
-          setCapturedBlack((prev) => [...prev, result.captured!]);
-        } else {
-          setCapturedWhite((prev) => [...prev, result.captured!]);
-        }
+    if (externalFen) {
+    try {
+      const g = new Chess();
+      g.load(externalFen); // load without returning
+      setGame(g);
+    } catch (e) {
+      console.error("Invalid external FEN:", e);
+    }
+  }
+}, [externalFen]);
+
+  const applyMoveLocally = (from: string, to: string) => {
+    const g = new Chess(game.fen());
+
+    // Custom rule legality
+    const legalTargets = CustomizedMedeqMovement(g, from as Square);
+    if (!legalTargets.includes(to)) return;
+
+    const piece = g.get(from as any);
+    const needPromo = piece?.type === "p" && (to[1] === "1" || to[1] === "8");
+
+    const mv = g.move(
+      onExternalMove
+        ? needPromo
+          ? { from, to, promotion: "q" } // realtime-safe
+          : { from, to }
+        : { from, to } // local: show UI if needPromo
+    );
+    if (!mv) return;
+
+    if (!gameStarted) setGameStarted(true);
+
+    if (mv.captured) {
+      if (mv.color === "w") setCapturedBlack((prev) => [...prev, mv.captured!]);
+      else setCapturedWhite((prev) => [...prev, mv.captured!]);
+    }
+
+    if (onExternalMove) {
+      // Multiplayer/AI: only move on your turn
+      if (game.turn() !== playerColor) return;
+      onExternalMove(from, to);
+      // optimistic update for snappy feel
+      setGame(new Chess(g.fen()));
+      setCurrentTurn(g.turn());
+    } else {
+      // Local: show promotion modal if needed
+      if (needPromo) {
+        setPromotionMove({ from: from as Square, to: to as Square });
+        return;
       }
-      setCurrentTurn(gameCopy.turn());
-      setGame(new Chess(gameCopy.fen()));
+      setGame(new Chess(g.fen()));
+      setCurrentTurn(g.turn());
     }
   };
 
-  const handleSquareClick = (square: string) => {
+  const onDrop = ({ sourceSquare, targetSquare }: { sourceSquare: string; targetSquare: string }) => {
+    if (onExternalMove && game.turn() !== playerColor) return; // not your turn
+    applyMoveLocally(sourceSquare, targetSquare);
+    setSelectedSquare(null);
+    setHighlightedSquares({});
+  };
+
+  const onSquareClick = (square: string) => {
+    if (onExternalMove && game.turn() !== playerColor) return;
     if (selectedSquare) {
-      const validMoves = CustomizedMedeqMovement(game, selectedSquare as Square);
-
-      if (validMoves.includes(square)) {
-        makeMove({ from: selectedSquare, to: square });
-      }
-
+      applyMoveLocally(selectedSquare, square);
       setSelectedSquare(null);
       setHighlightedSquares({});
     } else {
       const validMoves = CustomizedMedeqMovement(game, square as Square);
-      const highlightStyles: Record<string, React.CSSProperties> = {};
-
-      validMoves.forEach((move) => {
-        highlightStyles[move as Square] = { backgroundColor: "rgba(0, 255, 0, 0.5)" };
-      });
-
+      const styles: Record<string, React.CSSProperties> = {};
+      validMoves.forEach((m) => (styles[m as Square] = { backgroundColor: "rgba(0,255,0,0.45)" }));
       setSelectedSquare(square);
-      setHighlightedSquares(highlightStyles);
+      setHighlightedSquares(styles);
+    }
+  };
+
+  // finalize local promotion
+  const finalizePromotion = (promotion: "q" | "r" | "b" | "n") => {
+    if (!promotionMove) return;
+    const g = new Chess(game.fen());
+    const mv = g.move({ from: promotionMove.from, to: promotionMove.to, promotion });
+    if (!mv) return;
+    setGame(new Chess(g.fen()));
+    setCurrentTurn(g.turn());
+    setPromotionMove(null);
+
+    if (mv.captured) {
+      if (mv.color === "w") setCapturedBlack((p) => [...p, mv.captured!]);
+      else setCapturedWhite((p) => [...p, mv.captured!]);
     }
   };
 
   useEffect(() => {
     if (game.isCheckmate()) {
-      setGameOverMessage(`ውጣ በቃ! ${game.turn() === "w" ? "Black" : "ነጭ"} አሸንፏል!`);
+      setGameOverMessage(`Checkmate! ${game.turn() === "w" ? "Black" : "White"} wins`);
     } else if (game.isDraw()) {
-      setGameOverMessage("መና ነው");
+      setGameOverMessage("Draw");
     } else {
       setGameOverMessage(null);
     }
   }, [game]);
-  const onTimeout = (color: "w" | "b") => {
-    setGameOverMessage(`${color === "w"? "ነጭ" : "ጥቁር"} ሰዓት አልቁዋል!`)
-  };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "start", gap: "10px" }}>
-    {/*Timer  */}
-    <ChessTimer currentTurn={currentTurn} gameOver={!!gameOverMessage} onTimeout={onTimeout} gameStarted = {gameStarted} timeLimit={timeLimit}/>
-      <h3>ነጭ የበላው</h3>
-      {/* ✅ Captured Black Pieces (Top) */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "5px", minHeight: "40px" }}>
-        {capturedBlack.map((piece, index) => (
-          <span key={index} style={{ fontSize: "24px" }}>
-            {getPieceUnicode(piece, "b")}
-          </span>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+      <ChessTimer
+        currentTurn={currentTurn}
+        gameOver={!!gameOverMessage}
+        onTimeout={(c) => setGameOverMessage(`${c === "w" ? "White" : "Black"} ran out of time`)}
+        gameStarted={gameStarted}
+        timeLimit={timeLimit}
+      />
+
+      {/* Captured by Black (top) */}
+      <div style={{ display: "flex", gap: 6, minHeight: 24 }}>
+        {capturedBlack.map((p, i) => (
+          <span key={i} style={{ fontSize: 20 }}>{pieceChar(p, "b")}</span>
         ))}
       </div>
 
-      {/* Chessboard Component */}
       <Chessboard
         position={game.fen()}
-        onDrop={({ sourceSquare, targetSquare }) => makeMove({ from: sourceSquare, to: targetSquare })}
-        onSquareClick={handleSquareClick}
+        onDrop={(e: any) => onDrop(e)}
+        onSquareClick={(sq: string) => onSquareClick(sq)}
         squareStyles={highlightedSquares}
-        width={750}
-        orientation="white"
-        boardStyle={{
-          borderRadius: "12px",
-          border: "3px solid #0000ff",
-          boxShadow: `0 6px 15px rgba(0,0,0,0.4)`,
-        }}
-        lightSquareStyle={{
-          backgroundColor: "#ff0000",
-          boxShadow: "inset 0 0 8px #0000ff",
-        }}
-        darkSquareStyle={{
-          backgroundColor: "#ff0000",
-          boxShadow: "inset 0 0 8px #0000ff",
-        }}
+        width={720}
+        orientation={playerColor === "w" ? "white" : "black"}
+        boardStyle={{ borderRadius: 12, border: "3px solid #0000ff", boxShadow: "0 6px 15px rgba(0,0,0,0.4)" }}
+        lightSquareStyle={{ backgroundColor: "#ff0000", boxShadow: "inset 0 0 8px #0000ff" }}
+        darkSquareStyle={{ backgroundColor: "#ff0000", boxShadow: "inset 0 0 8px #0000ff" }}
       />
 
-      {/* ✅ Captured White Pieces Section */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
-        <h3>ጥቁርየበላው</h3>
-        <div style={{ display: "flex", gap: "5px" }}>
-          {capturedWhite.map((piece, index) => (
-            <span key={index} style={{ fontSize: "24px" }}>
-              {getPieceUnicode(piece, "w")}
-            </span>
-          ))}
-        </div>
-        {/* Medeq Promotion UI*/}
+      {/* Captured by White (bottom) */}
+      <div style={{ display: "flex", gap: 6, minHeight: 24 }}>
+        {capturedWhite.map((p, i) => (
+          <span key={i} style={{ fontSize: 20 }}>{pieceChar(p, "w")}</span>
+        ))}
+      </div>
+
+      {/* Promotion modal only in local mode (multiplayer/AI auto-queens for sync) */}
+      {!onExternalMove && (
         <PawnPromotion
           promotionMove={promotionMove}
           game={game}
           setGame={setGame}
           setPromotionMove={setPromotionMove}
+          onPromote={finalizePromotion}
         />
-      </div>
+      )}
 
-      {/* ✅ Game Over Message */}
       {gameOverMessage && (
         <motion.div
           className="absolute inset-0 flex items-center justify-center bg-opacity-50"
@@ -154,12 +204,9 @@ const SenterejGameWithHighlight: React.FC<SenterejGameWithHighlightProps> = ({ti
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 150 }}
           >
-            <h2 className="text-2xl font-bold text-center">{gameOverMessage}</h2>
-            <button
-              onClick={() => window.location.reload()} // Restart game
-              className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition"
-            >
-              እንደገና አስጀምር
+            <h2 className="text-2xl font-bold text-center text-white">{gameOverMessage}</h2>
+            <button onClick={() => window.location.reload()} className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition">
+              Restart
             </button>
           </motion.div>
         </motion.div>
@@ -168,20 +215,12 @@ const SenterejGameWithHighlight: React.FC<SenterejGameWithHighlightProps> = ({ti
   );
 };
 
-// ✅ Function to Display Captured Pieces as Unicode Icons
-const getPieceUnicode = (piece: string, color: "w" | "b") => {
-  const pieceMap: Record<string, string> = {
-    p: "♙",
-    n: "♘",
-    b: "♗",
-    r: "♖",
-    q: "♕",
-    k: "♔",
-  };
-
+function pieceChar(piece: string, color: "w" | "b") {
+  const map: Record<string, string> = { p: "♙", n: "♘", b: "♗", r: "♖", q: "♕", k: "♔" };
+  const w = map[piece.toLowerCase()] || "?";
   return color === "w"
-    ? pieceMap[piece.toLowerCase()] || "?"
-    : pieceMap[piece.toLowerCase()].replace("♙", "♟").replace("♘", "♞").replace("♗", "♝").replace("♖", "♜").replace("♕", "♛").replace("♔", "♚");
-};
+    ? w
+    : w.replace("♙", "♟").replace("♘", "♞").replace("♗", "♝").replace("♖", "♜").replace("♕", "♛").replace("♔", "♚");
+}
 
 export default SenterejGameWithHighlight;

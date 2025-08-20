@@ -62,7 +62,7 @@ const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
       </div>
       {/* Game Mode Selector — ✅ ADD THIS HERE */}
     <div style={{ margin: "20px 0" }}>
-      <label>Select Mode:</label>
+      <label>Select Mode:&nbsp;</label>
       <select value={mode} onChange={(e) => setMode(e.target.value as "local" | "ai" | "multiplayer")}>
         <option value="local">2 Player (Same Device)</option>
         <option value="ai">Play with AI</option>
