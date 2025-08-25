@@ -43,6 +43,8 @@ const App = () => {
     // Human plays White by default. You can extend later to choose color.
     return <AIChessGame timeLimit={timeControl} humanColor="w" />;
   }
+  return <SenterejGameWithHighlight timeLimit={timeControl} />;
+
   
   // Play music if enabled
   React.useEffect(() => {

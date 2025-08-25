@@ -52,7 +52,7 @@ const AIChessGame: React.FC<Props> = ({ timeLimit, humanColor }) => {
             const test = new Chess(g.fen());
             const p2 = test.get(sq as any);
             const promo = p2?.type === "p" && (to[1] === "1" || to[1] === "8");
-            if (test.move(promo ? { from: sq, to, promotion: "q" } : { from: sq, to })) {
+            if (test.move(promo ? { from: sq, to, promotion: "q" } : { from: sq, to } as any)) {
               moves.push({ from: sq, to: to as Square });
             }
           }
