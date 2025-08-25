@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 
 interface GameMenuProps {
-  onStart: (timeControl: number, musicOn: boolean) => void;
+    onStart: (timeControl: number, musicOn: boolean, mode: "multiplayer" | "ai" | "local") => void;
 }
+
 
 const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [timeControl, setTimeControl] = useState(300); // default 5 min
   const [musicOn, setMusicOn] = useState(true);
+  const [mode, setMode] = useState<"multiplayer" | "ai" | "local">("local");
 
   return (
+    
     <div style={{ textAlign: "center", marginTop: "80px", padding: "20px" }}>
       <h1>♟️ Senterej Chess Game ♟️</h1>
 
@@ -29,6 +32,7 @@ const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
               <li>The player who runs out of time loses.</li>
             </ul>
           </div>
+          
         )}
       </div>
 
@@ -56,7 +60,15 @@ const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
           🎵 Enable Background Music
         </label>
       </div>
-
+      {/* Game Mode Selector — ✅ ADD THIS HERE */}
+    <div style={{ margin: "20px 0" }}>
+      <label>Select Mode:&nbsp;</label>
+      <select value={mode} onChange={(e) => setMode(e.target.value as "local" | "ai" | "multiplayer")}>
+        <option value="local">2 Player (Same Device)</option>
+        <option value="ai">Play with AI</option>
+        <option value="multiplayer">Multiplayer</option>
+      </select>
+    </div>
       {/* Start Game */}
       <button
         style={{
@@ -69,12 +81,14 @@ const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
           cursor: "pointer",
           marginTop: "20px"
         }}
-        onClick={() => onStart(timeControl, musicOn)}
+        onClick={() => onStart(timeControl, musicOn, mode)}
       >
         Start Game
       </button>
     </div>
+    
   );
+  
 };
 
 export default GameMenu;
