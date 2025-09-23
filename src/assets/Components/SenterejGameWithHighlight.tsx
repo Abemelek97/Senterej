@@ -5,6 +5,7 @@ import CustomizedMedeqMovement from './validatingMoves';
 import { motion } from 'framer-motion';
 import PawnPromotion from './MedeqPromotion';
 import ChessTimer from './SenterejTimer';
+import customPieces from "./customPieces";
 
 interface Props
 {
@@ -29,6 +30,7 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
   const [promotionMove, setPromotionMove] = useState<{ from: Square; to: Square } | null>(null);
   const [currentTurn, setCurrentTurn] = useState<"w" | "b">("w");
   const [gameStarted, setGameStarted] = useState(false);
+
 
     // Load external FEN (Multiplayer / AI)
   useEffect(() => {
@@ -167,6 +169,7 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
         onSquareClick={(sq: string) => onSquareClick(sq)}
         squareStyles={highlightedSquares}
         width={720}
+        pieces={customPieces}
         orientation={playerColor === "w" ? "white" : "black"}
         boardStyle={{ borderRadius: 12, border: "3px solid #0000ff", boxShadow: "0 6px 15px rgba(0,0,0,0.4)" }}
         lightSquareStyle={{ backgroundColor: "#ff0000", boxShadow: "inset 0 0 8px #0000ff" }}
