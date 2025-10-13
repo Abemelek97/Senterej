@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Chessboard from "chessboardjsx";
 import { Chess, Square } from "chess.js";
 import SenterejGameWithHighlight from "./SenterejGameWithHighlight";
 import CustomizedMedeqMovement from "./validatingMoves";

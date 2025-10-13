@@ -9,7 +9,7 @@ interface Props {
   onPromote?: (piece: "q" | "r" | "b" | "n") => void;
 }
 
-const PawnPromotion: React.FC<Props> = ({ promotionMove, game, setGame, setPromotionMove, onPromote }) => {
+const PawnPromotion: React.FC<Props> = ({ promotionMove, game, setGame, onPromote }) => {
   if (!promotionMove) return null;
 
   const promote = (piece: "q" | "r" | "b" | "n") => {
