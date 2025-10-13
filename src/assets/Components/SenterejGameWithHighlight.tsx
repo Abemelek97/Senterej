@@ -201,7 +201,7 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
                     />,
                 bB: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\saba.png"
+                        src = "\public\pieces\Black_Saba.png"
                         alt = "የ ጥቁር ሳባ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
@@ -213,7 +213,7 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
                     />,
                 bR: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\der.png"
+                        src = "\public\pieces\Black_der.png"
                         alt = "የ ጥቁር ግንብ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
@@ -237,7 +237,7 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
                     />,
                 bK: ({squareWidth}) =>
                     <img 
-                        src = "\public\pieces\negus.png"
+                        src = "\public\pieces\Black_Negus.png"
                         alt = "የ ጥቁር ንጉስ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />
