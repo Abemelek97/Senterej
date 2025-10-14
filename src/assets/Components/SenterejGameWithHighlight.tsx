@@ -137,9 +137,9 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
 
   useEffect(() => {
     if (game.isCheckmate()) {
-      setGameOverMessage(`Checkmate! ${game.turn() === "w" ? "Black" : "White"} wins`);
+      setGameOverMessage(`ውጣ በቃ! ${game.turn() === "w" ? "ጥቁር" : "ነጭ"} አሸንፏል`);
     } else if (game.isDraw()) {
-      setGameOverMessage("Draw");
+      setGameOverMessage("መና ነው");
     } else {
       setGameOverMessage(null);
     }
@@ -150,7 +150,7 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
       <ChessTimer
         currentTurn={currentTurn}
         gameOver={!!gameOverMessage}
-        onTimeout={(c) => setGameOverMessage(`${c === "w" ? "White" : "Black"} ran out of time`)}
+        onTimeout={(c) => setGameOverMessage(`${c === "w" ? "ነጭ" : "ጥቁር"} ግዜ አልቋል!`)}
         gameStarted={gameStarted}
         timeLimit={timeLimit}
       />
