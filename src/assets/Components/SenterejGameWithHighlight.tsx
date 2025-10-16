@@ -171,73 +171,73 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
         pieces= {{
                  wP: ({squareWidth}) => 
                  <img
-                  src = "\public\pieces\Medeq.png"
+                  src = "/pieces/Medeq.png"
                   alt = "የ ነጭ መደቅ" 
                   style = {{width: squareWidth, height: squareWidth}}
                     />,
                 bP: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\Black_Medeq.png"
+                        src = "/pieces/Black_Medeq.png"
                         alt = "የ ጥቁር መደቅ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
                 wN: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\ferese.png"
+                        src = "/pieces/ferese.png"
                         alt = "የ ነጭ ፈረስ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
                 bN: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\Black_ferese.png"
+                        src = "/pieces/Black_ferese.png"
                         alt = "የ ጥቁር ፈረስ"
                         style = {{width: squareWidth, height: squareWidth}}
                         />,
                 wB: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\saba.png"
+                        src = "/pieces/saba.png"
                         alt = "የ ነጭ ሳባ"
                         style = {{width: squareWidth, height: squareWidth}}    
                     />,
                 bB: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\Black_Saba.png"
+                        src = "/pieces/Black_Saba.png"
                         alt = "የ ጥቁር ሳባ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
                 wR: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\der.png"
+                        src = "/pieces/Der.png"
                         alt = "የ ነጭ ግንብ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
                 bR: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\Black_der.png"
+                        src = "/pieces/Black_Der.png"
                         alt = "የ ጥቁር ግንብ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
                 wQ: ({squareWidth}) => 
                     <img
-                        src = "\public\pieces\ferz.png"
+                        src = "/pieces/ferz.png"
                         alt = "የ ነጭ ፈረዛ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
                 bQ: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\Black_ferz.png"
+                        src = "/pieces/Black_ferz.png"
                         alt = "የ ጥቁር ፈረዛ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
                     wK: ({squareWidth}) =>
                     <img
-                        src = "\public\pieces\negus.png"
+                        src = "/pieces/negus.png"
                         alt = "የ ነጭ ንጉስ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />,
                 bK: ({squareWidth}) =>
                     <img 
-                        src = "\public\pieces\Black_Negus.png"
+                        src = "/pieces/Black_Negus.png"
                         alt = "የ ጥቁር ንጉስ"
                         style = {{width: squareWidth, height: squareWidth}}
                     />
