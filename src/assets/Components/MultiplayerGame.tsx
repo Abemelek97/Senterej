@@ -13,7 +13,7 @@ interface Props {
 }
 
 const MultiplayerGame: React.FC<Props> = ({ roomId, isHost, timeLimit }) => {
-   const [fen, setFen] = useState<string>("start");
+   const [fen, setFen] = useState<string>("ጀምር");
    const playerColor: "w" | "b" = isHost ? "w" : "b";
 
   // Listen for moves
@@ -27,7 +27,7 @@ const MultiplayerGame: React.FC<Props> = ({ roomId, isHost, timeLimit }) => {
   }, [roomId]);
     
 const onExternalMove = async (from: string, to: string) => {
-    const g = new Chess(fen === "start" ? undefined : fen);
+    const g = new Chess(fen === "ጀምር" ? undefined : fen);
     const piece = g.get(from as any);
     const needPromo = piece?.type === "p" && (to[1] === "1" || to[1] === "8");
     const mv = g.move(needPromo ? { from, to, promotion: "q" } : { from, to });
@@ -42,7 +42,7 @@ const onExternalMove = async (from: string, to: string) => {
 
   return (
     <div style = {{padding: 12}}>
-    <h3>Room: {roomId} — You are {playerColor === "w" ? "White" : "Black"}</h3>
+    <h3>መጫወቻ ክፍል: {roomId} — እርሶ  {playerColor === "w" ? "ነጭ ኖት" : "ጥቁር ኖት"}</h3>
 
       <SenterejGameWithHighlight
         externalFen={fen}

@@ -14,22 +14,25 @@ const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
   return (
     
     <div style={{ textAlign: "center", marginTop: "80px", padding: "20px" }}>
-      <h1>♟️ Senterej Chess Game ♟️</h1>
+      <h1>♟️ ሰንጠረዥ ♟️</h1>
 
       {/* Instructions Toggle */}
       <div style={{ margin: "20px 0" }}>
         <button onClick={() => setShowInstructions((prev) => !prev)}>
-          {showInstructions ? "Hide Instructions" : "Show Instructions"}
+          {showInstructions ? "አጥፋ መርህ" : "መርህ አሳይ"}
         </button>
         {showInstructions && (
           <div style={{ textAlign: "left", maxWidth: 600, margin: "20px auto" }}>
-            <h3>📜 Game Instructions</h3>
+            <h3>📜 የ አጨዋወት መርህ</h3>
             <ul>
-              <li>This is a Senterej-style chess game.</li>
-              <li>You can move any piece at the start (simultaneous deployment).</li>
-              <li>Pawns promote upon reaching the 8th/1st rank.</li>
-              <li>The timer starts after the first move.</li>
-              <li>The player who runs out of time loses.</li>
+              <li>እንቅስቃሴውች እና ጦርነቱ</li>
+              <li>ንጉስ፡ በዘመናዊ ቼዝ ውስጥ እንደ ንጉስ ሆኖ ግን ከመሃል ይጀምራል</li>
+              <li>ፈርዝ፡ አንድ ካሬ በሰያፍ ይንቀሳቀሳል</li>
+              <li>ደር፡ በአግድም (በጎን) ወይም በአቀባዊ (ወደላይ እና ወደታች) ቀጥታ መስመር ይንቀሳቀሳል</li>
+              <li>ፈረስ፡ ሁለት ካሬዎች በአንድ አቅጣጫ (በአግድም ወይም በአቀባዊ) እና ከዚያ ወደዚያ አቅጣጫ አንድ ካሬ </li>
+              <li>ሳባ፡ በሰያፍ መንገድ ይንቀሳቀሳል፣ ግን የመነሻ ነጥቡን ጨምሮ ሶስት ካሬዎችን ብቻ መሸፈን ይችላል።</li>
+              <li>መደቅ፡ አንድ ካሬ በአንድ ጊዜ ወደፊት ያንቀሳቅሳል፣ ያለ መጀመሪያው ባለ ሁለት ካሬ አማራጭ</li>
+              <li>ሰንጠረዥ ከመጀመሪያው "ገደላ" በፊት ተጨዋቾች መጫወቻቸውን በአንድ ጊዜ እና በፈለጉት መጠን ማንቀሳቀስ የሚችሉበት የወረራ ቅስቀሳ ምዕራፍ የሚባል ልዩ ምዕራፍ ያሳያል። ይህ ደረጃ በመጀመሪያው ገደላ ያበቃል፣ ከዚያ በኋላ ጨዋታው እንደ ዘመናዊ ቼዝ እየተፈራረቁ ይቀጥላል።</li>
             </ul>
           </div>
           
@@ -38,14 +41,14 @@ const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
 
       {/* Time Control */}
       <div style={{ margin: "20px 0" }}>
-        <h3>⏱ Select Time Control:</h3>
+        <h3>⏱ ሰዓት መምረጥ:</h3>
         <select
           value={timeControl}
           onChange={(e) => setTimeControl(Number(e.target.value))}
         >
-          <option value={180}>3 Minutes</option>
-          <option value={300}>5 Minutes</option>
-          <option value={600}>10 Minutes</option>
+          <option value={180}>3 ደቂቃ</option>
+          <option value={300}>5 ደቂቃ</option>
+          <option value={600}>10 ደቂቃ</option>
         </select>
       </div>
 
@@ -57,16 +60,16 @@ const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
             checked={musicOn}
             onChange={(e) => setMusicOn(e.target.checked)}
           />
-          🎵 Enable Background Music
+          🎵 ማጀቢያ ሙዚቃ
         </label>
       </div>
       {/* Game Mode Selector — ✅ ADD THIS HERE */}
     <div style={{ margin: "20px 0" }}>
-      <label>Select Mode:&nbsp;</label>
+      <label>የ ጨዋታ ስልት:&nbsp;</label>
       <select value={mode} onChange={(e) => setMode(e.target.value as "local" | "ai" | "multiplayer")}>
-        <option value="local">2 Player (Same Device)</option>
-        <option value="ai">Play with AI</option>
-        <option value="multiplayer">Multiplayer</option>
+        <option value="local">ለ 2 በዚው መጫወጫ </option>
+        <option value="ai">ከ ኮምፒውተር ጋር</option>
+        <option value="multiplayer">ለ 2 ተጫዋቾች</option>
       </select>
     </div>
       {/* Start Game */}
@@ -83,7 +86,7 @@ const GameMenu: React.FC<GameMenuProps> = ({ onStart }) => {
         }}
         onClick={() => onStart(timeControl, musicOn, mode)}
       >
-        Start Game
+        ጀምር
       </button>
     </div>
     

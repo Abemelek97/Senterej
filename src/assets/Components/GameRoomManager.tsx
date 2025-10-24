@@ -39,24 +39,24 @@ const createRoom = async () => {
 
   return (
     <div style={{ textAlign: "center", marginTop: "40px" }}>
-      <h2>♟️ Multiplayer Game Setup</h2>
+      <h2>♟️ ለ 2 መጫወቻ ማስተካካያ</h2>
 
       <div style={{ marginBottom: "20px" }}>
         <button onClick={createRoom} style={{ padding: "10px 20px", marginRight: "10px" }}>
-          Create New Room
+          መጫወቻ ክፍል ፍጠር
         </button>
       </div>
 
       <div style={{ marginTop: "20px" }}>
         <input
           type="text"
-          placeholder="Enter Room ID"
+          placeholder="የ መጫወቻ ክፍል ኮድ አስገባ"
           value={roomInput}
           onChange={(e) => setRoomInput(e.target.value)}
           style={{ padding: "8px", width: "200px" }}
         />
         <button onClick={joinRoom} style={{ padding: "8px 16px", marginLeft: "10px" }}>
-          Join Room
+          መጫወቻ ክፍል ተቀላቅል
         </button>
       </div>
     </div>

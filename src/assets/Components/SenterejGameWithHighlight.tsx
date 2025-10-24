@@ -281,7 +281,7 @@ const SenterejGameWithHighlight: React.FC<Props> = ({
           >
             <h2 className="text-2xl font-bold text-center text-white">{gameOverMessage}</h2>
             <button onClick={() => window.location.reload()} className="mt-4 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg transition">
-              Restart
+              እንደገና አስጀምር
             </button>
           </motion.div>
         </motion.div>
